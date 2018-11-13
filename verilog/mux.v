@@ -42,6 +42,43 @@ module mux4to1by5
 
 endmodule
 
+
+module mux2to1by1
+(
+  output reg      out,
+  input  address,
+  input  input0, input1
+);
+
+
+    always @ ( * ) begin
+      if(address==2'd0) begin
+        out <= input0; // Connect the output of the array
+      end else if (address==2'd1)begin
+        out <= input1; // Connect the output of the array
+      end
+    end
+
+endmodule
+
+module mux2to1by8
+(
+  output reg[7:0]      out,
+  input  address,
+  input[7:0]  input0, input1
+);
+
+
+    always @ ( * ) begin
+      if(address==2'd0) begin
+        out <= input0; // Connect the output of the array
+      end else if (address==2'd1)begin
+        out <= input1; // Connect the output of the array
+      end
+    end
+
+endmodule
+
 // module mux4to1by5
 // (
 //   output[4:0]      out,
