@@ -31,6 +31,16 @@ module fpuTest ();
     if(floatRes!=32'h40000000) begin
       $display("Test 2 failed. We got %h!", floatRes);
       $display("We got %b!", floatRes);
+      $display("21: %b", floatRes[21]);
+      $display("22: %b", floatRes[22]);
+      $display("23: %b", floatRes[23]);
+      $display("24: %b", floatRes[24]);
+      $display("25: %b", floatRes[25]);
+      $display("26: %b", floatRes[26]);
+      $display("27: %b", floatRes[27]);
+      $display("28: %b", floatRes[28]);
+      $display("29: %b", floatRes[29]);
+      $display("30: %b", floatRes[30]);
     end
     if(floatRes==32'h40000000) begin
       $display("Test 2 succeeded. We got %h!", floatRes);
@@ -66,11 +76,11 @@ module fpuTest ();
     data1=32'h44b30000; // +1432
     data2=32'h40466666; // +3.099999904632568359375
     FloatALUop=3'd0; #10
-    if(floatRes!=32'h44ada000) begin
+    if(floatRes!=32'h44b36333) begin
       $display("Test 5 failed. We got %h!", floatRes);
       $display("We got %b!", floatRes);
     end
-    if(floatRes==32'h44ada000) begin
+    if(floatRes==32'h44b36333) begin
       $display("Test 5 succeeded. We got %h!", floatRes);
     end
 
