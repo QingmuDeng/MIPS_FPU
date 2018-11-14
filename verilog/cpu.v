@@ -6,6 +6,7 @@
 `include "signextend.v"
 `include "regfile.v"
 `include "dff.v"
+`include "multiplier.v"
 
 module cpu(
   input clk
@@ -22,10 +23,11 @@ wire [31:0] aluResult;
 wire zeroFlag;
 wire [31:0] readOut1, readOut2;
 wire [1:0] pcMuxSelect, regWriteSelectControl, muxB_en;
-wire dm_we, regWr_en, muxAselect, muxWd3_en;
+wire dm_we, regWr_en, muxAselect, muxWd3_en, multiplyEn;
 wire [31:0] pcPlusFour;
 wire [31:0] branchAddress;
 wire [2:0] ALUop;
+wire [31:0] Hi, Lo;
 
 memory cpuMemory (
   .clk(clk),
@@ -128,6 +130,7 @@ instructionDecoder opDecoder(
   .zero(zeroFlag),
   .dm_we(dm_we),
   .muxWD3_en(muxWd3_en),
+  .multiplyEn(multiplyEn),
   .muxB_en(muxB_en),
   .regWriteAddSelect(regWriteSelectControl),
   .muxPC(pcMuxSelect),
@@ -153,6 +156,12 @@ ALU pcBranch(
   .carryout(),
   .result(branchAddress)
   );
+
+multiply X(.enable(multiplyEn),
+           .A(opA),
+           .B(opB),
+           .Hi(Hi),
+           .Lo(Lo));
 
   // assign pcIn = 32'b0;
 
