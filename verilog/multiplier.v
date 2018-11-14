@@ -8,7 +8,7 @@ module multiply (
 
   always @ ( * ) begin
     if(enable) begin
-      {Hi, Lo} = A*B;
+      {Hi, Lo} <= A*B;
     end
   end
 
