@@ -13,10 +13,18 @@ endmodule
 module signExtendFloat(
   input sign,
   input[31:0] significand,
-  output[31:0] extended
+  output reg [31:0] extended
 );
+  always @(*) begin
+    if(sign)begin
+      // extended <= {{8{sign}}, significand[23:0]};
+      extended <= (~{{8{sign}}, significand[23:0]})+1'b1;
 
-  assign extended = {{8{sign}}, significand[23:0]};
+    end
+    else begin
+      extended <= {{8{sign}}, significand[23:0]};
+    end
+  end
 
 endmodule
 

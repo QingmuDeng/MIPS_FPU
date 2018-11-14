@@ -22,6 +22,7 @@ module coprocessor1 (
   wire xorSign;
   wire [31:0] exponentALUResult;
 
+
   // case (exponentDiff[7]):
   //   0: begin
   //     shiftMux = 0;
