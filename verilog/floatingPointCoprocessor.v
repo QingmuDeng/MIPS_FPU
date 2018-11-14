@@ -109,10 +109,10 @@ module coprocessor1 (
   always @ ( * ) begin
     floatRes <= {FloataluResult[31], exponentALUResult[7:0], FloataluResult[22:0]};
 
-    if (exponentDiff > 7'b0) begin
+    if (exponentDiff[7] == 1'b0) begin
       shiftMux <= 0;
     end
-    else if (exponentDiff <= 7'b0) begin
+    else begin
       shiftMux <= 1;
     end
 
