@@ -15,12 +15,14 @@ module coprocessor1 (
   wire [31:0] shiftedSignificand;
   wire [31:0] significandA, significandB;
   wire [31:0] floatA, floatB, FloataluResult, floatResult;
-  wire FloatALUop;
+  // wire FloatALUop;
   wire nonShiftMux, signExtendA, signExtendB;
   reg shiftMux;
 
   wire xorSign;
-  wire [31:0] exponentALUResult, rightShifteddalu;
+  wire [31:0] exponentALUResult, rightShifteddalu, notAluRes, correctFloataluResult;
+  wire [31:0] normalizedFloataluResult;
+  wire [31:0] exponentChange;
 
 
   // case (exponentDiff[7]):
@@ -34,7 +36,7 @@ module coprocessor1 (
   //
   // endcase
 
-  // xor signCheck(xorSign, data1[31], data2[32]);
+  xor signCheck(xorSign, signExtendB, FloataluResult[31]);
 
   not floatNormalizeInv(nonShiftMux, shiftMux);
 
@@ -89,6 +91,16 @@ module coprocessor1 (
   // lshiftOne shiftProcessorOutput(.aluOut(FloataluResult),
   //                                .lshifted(floatResult));
 
+
+  // not twosComplement(notAluRes, FloataluResult);
+
+  mux2to1by32 addSubtract(
+    .address(xorSign),//FloatALUop[0]),
+    .input0(FloataluResult),
+    .input1(notAluRes + 32'b1),
+    .out(correctFloataluResult)
+    );
+
   mux2to1by8 ExponentSelect(
     .address(shiftMux),
     .input0(data1[30:23]),
@@ -97,25 +109,31 @@ module coprocessor1 (
   );
 
   ALU exponentALU(
-    .operandA({31'b0, FloataluResult[24]}),
-    .operandB({{24{exponentResult[7]}}, exponentResult}),
-    .command(FloatALUop),
+    .operandA(exponentChange),//{31'b0, (correctFloataluResult[24]&~(|(correctFloataluResult[31:25])))}),
+    .operandB({{24{1'b0}}, exponentResult}),
+    .command(`ADD),//FloatALUop),
     .overflow(),
     .zero(),
     .carryout(),
     .result(exponentALUResult)
   );
 
-  mux2to1by32 shiftMe(
-      .address(FloataluResult[24]),
-      .input0(FloataluResult),
-      .input1(FloataluResult>>>1),
-      .out(rightShifteddalu)
-    );
+  // mux2to1by32 shiftMe(
+  //     .address(correctFloataluResult[24]&~(|(correctFloataluResult[31:25]))),
+  //     .input0(correctFloataluResult),
+  //     .input1(correctFloataluResult>>>1),
+  //     .out(rightShifteddalu)
+  //   );
+  normalizer normal(
+    .FloataluResult(correctFloataluResult),
+    .normalizedFloataluResult(normalizedFloataluResult),
+    .exponentChange(exponentChange)
+  );
 
+    assign notAluRes = ~FloataluResult;
   always @ ( * ) begin
 
-      floatRes <= {FloataluResult[31], exponentALUResult[7:0], rightShifteddalu[22:0]};
+      floatRes <= {normalizedFloataluResult[31], exponentALUResult[7:0], normalizedFloataluResult[22:0]};
 
     // floatRes <= {FloataluResult[31], exponentALUResult[7:0], FloataluResult[22:0]};
 

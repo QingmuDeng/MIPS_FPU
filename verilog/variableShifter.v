@@ -22,8 +22,29 @@ module variableShifter(
       end
     end
   end
-
 endmodule
+
+module normalizer (
+  input [31:0] FloataluResult,
+  output reg [31:0] normalizedFloataluResult,
+  output reg [31:0] exponentChange
+  );
+
+  always @ ( * ) begin
+    if(FloataluResult[24]&~(|(FloataluResult[31:25]))) begin
+      exponentChange <= 32'sd1;
+      normalizedFloataluResult <= FloataluResult>>>1;
+    end
+    else if(FloataluResult[22]&~(|(FloataluResult[31:23]))) begin
+      exponentChange <= -32'sd1;
+      normalizedFloataluResult <= FloataluResult<<1;
+    end
+    else begin
+      exponentChange <= 32'sd0;
+      normalizedFloataluResult <= FloataluResult;
+    end
+  end
+endmodule // normalizer
 
 module lShiftOne(
   input[31:0] aluOut,

@@ -89,7 +89,7 @@ module fpuTest ();
     data2=32'hc5af3800; //-5607
     FloatALUop=3'd0; #10
     if(floatRes!=32'hc5aff000) begin //-5630, getting positive 25.0, 0x41c80000
-      $display("Test 6 failed. We got %h!", floatRes);
+      $display("Test 6 failed. We got %h from data1=%f and data2=%f!", floatRes,data1, data2);
       $display("We got %b!", floatRes);
     end
     if(floatRes==32'hc5aff000) begin
@@ -101,11 +101,47 @@ module fpuTest ();
     data2=32'h00FFFFFF; //
     FloatALUop=3'd0; #10
     if(floatRes!=32'h017FFFFF) begin //
-      $display("Test 7 failed. We got %h!", floatRes);
+      $display("Test 7 failed. We got %f!", floatRes);
       $display("We got %b!", floatRes);
     end
     if(floatRes==32'h017FFFFF) begin
-      $display("Test 7 succeeded. We got %h!", floatRes);
+      $display("Test 7 succeeded. We got %f!", floatRes);
+    end
+
+    #100;
+    data1=32'h3f800000; // +1
+    data2=32'h3dcccccd; // +0.100000001490116119384765625
+    FloatALUop=`SUB; #10
+    if(floatRes!=32'h3f666666) begin
+      $display("Test 8 failed. We got %h!", floatRes);
+      $display("We got %b!", floatRes);
+    end
+    if(floatRes==32'h3f666666) begin
+      $display("Test 8 succeeded. We got %h!", floatRes);
+    end
+
+    #100;
+    data1=32'h3f800000; // +1
+    data2=32'hbdcccccd; // -0.100000001490116119384765625
+    FloatALUop=`ADD; #10
+    if(floatRes!=32'h3f666666) begin
+      $display("Test 9 failed. We got %h!", floatRes);
+      $display("We got %b!", floatRes);
+    end
+    if(floatRes==32'h3f666666) begin
+      $display("Test 9 succeeded. We got %h!", floatRes);
+    end
+
+    #100;
+    data1=32'h404f8d50; // -3.243
+    data2=32'h40cdc28f; // +6.43
+    FloatALUop=`ADD; #10
+    if(floatRes!=32'h404bf7ce) begin //3.1869998
+      $display("Test 10 failed. We got %h!", floatRes);
+      $display("We got %b!", floatRes);
+    end
+    if(floatRes==32'h404bf7cf) begin
+      $display("Test 10 succeeded. We got %h!", floatRes);
     end
 
   end
