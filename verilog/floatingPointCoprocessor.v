@@ -20,7 +20,7 @@ module coprocessor1 (
   reg shiftMux;
 
   wire xorSign;
-  wire [31:0] exponentALUResult;
+  wire [31:0] exponentALUResult, rightShifteddalu;
 
 
   // case (exponentDiff[7]):
@@ -97,7 +97,7 @@ module coprocessor1 (
   );
 
   ALU exponentALU(
-    .operandA({31'b0, adjustedalu}),
+    .operandA({31'b0, FloataluResult[24]}),
     .operandB({{24{exponentResult[7]}}, exponentResult}),
     .command(FloatALUop),
     .overflow(),
@@ -106,27 +106,16 @@ module coprocessor1 (
     .result(exponentALUResult)
   );
 
-  // wire [31:0] adjustedalu;
-
-  // mux2to1by32 reAdjust(
-  //   .address(FloataluResult[24]),
-  //   .input0(FloataluResult),
-  //   .input1(FloataluResult>>1),
-  //   .out(adjustedalu)
-  //   );
-
-    wire adjustedalu;
-
-    mux2to1by1 reAdjust(
+  mux2to1by32 shiftMe(
       .address(FloataluResult[24]),
-      .input0(1'b0),
-      .input1(1'b1),
-      .out(adjustedalu)
-      );
+      .input0(FloataluResult),
+      .input1(FloataluResult>>>1),
+      .out(rightShifteddalu)
+    );
 
   always @ ( * ) begin
 
-      floatRes <= {FloataluResult[31], exponentALUResult[7:0], FloataluResult[22:0]};
+      floatRes <= {FloataluResult[31], exponentALUResult[7:0], rightShifteddalu[22:0]};
 
     // floatRes <= {FloataluResult[31], exponentALUResult[7:0], FloataluResult[22:0]};
 

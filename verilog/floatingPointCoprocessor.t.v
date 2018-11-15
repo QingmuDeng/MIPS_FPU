@@ -96,6 +96,18 @@ module fpuTest ();
       $display("Test 6 succeeded. We got %h!", floatRes);
     end
 
+    #100;
+    data1=32'h00FFFFFF; //
+    data2=32'h00FFFFFF; //
+    FloatALUop=3'd0; #10
+    if(floatRes!=32'h017FFFFF) begin //
+      $display("Test 7 failed. We got %h!", floatRes);
+      $display("We got %b!", floatRes);
+    end
+    if(floatRes==32'h017FFFFF) begin
+      $display("Test 7 succeeded. We got %h!", floatRes);
+    end
+
   end
 
 
