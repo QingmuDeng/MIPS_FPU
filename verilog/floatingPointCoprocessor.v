@@ -36,7 +36,7 @@ module coprocessor1 (
   //
   // endcase
 
-  xor signCheck(xorSign, signExtendB, FloataluResult[31]);
+  // xor signCheck(xorSign, signExtendB, FloataluResult[31]);
 
   not floatNormalizeInv(nonShiftMux, shiftMux);
 
@@ -94,8 +94,11 @@ module coprocessor1 (
 
   // not twosComplement(notAluRes, FloataluResult);
 
+  // wire bothNeg;
+  // and andgateNegs(bothNeg, floatA[31], floatB[31]);
+
   mux2to1by32 addSubtract(
-    .address(xorSign),//FloatALUop[0]),
+    .address(FloataluResult[31]),//FloatALUop[0]),
     .input0(FloataluResult),
     .input1(notAluRes + 32'b1),
     .out(correctFloataluResult)
@@ -133,7 +136,7 @@ module coprocessor1 (
     assign notAluRes = ~FloataluResult;
   always @ ( * ) begin
 
-      floatRes <= {normalizedFloataluResult[31], exponentALUResult[7:0], normalizedFloataluResult[22:0]};
+      floatRes <= {FloataluResult[31], exponentALUResult[7:0], normalizedFloataluResult[22:0]};
 
     // floatRes <= {FloataluResult[31], exponentALUResult[7:0], FloataluResult[22:0]};
 

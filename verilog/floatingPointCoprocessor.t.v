@@ -89,8 +89,19 @@ module fpuTest ();
     data2=32'hc5af3800; //-5607
     FloatALUop=3'd0; #10
     if(floatRes!=32'hc5aff000) begin //-5630, getting positive 25.0, 0x41c80000
-      $display("Test 6 failed. We got %h from data1=%f and data2=%f!", floatRes,data1, data2);
-      $display("We got %b!", floatRes);
+      $display();
+      $display("Test 6 failed. We got %h", floatRes);
+      $display("We exp %b", 32'hc5aff000);
+      $display("We got %b", floatRes);
+      $display("Sign: ");
+      $display("31: %b", floatRes[31]);
+      $display("Exponent: ");
+      $display("30-23: %b%b%b%b%b%b%b%b", floatRes[30], floatRes[29], floatRes[28], floatRes[27], floatRes[26], floatRes[25], floatRes[24], floatRes[23]);
+      $display("Exp:   10001011");
+      $display("Significand: ");
+      $display("22-0: %b%b%b%b%b%b%b%b%b%b%b%b%b%b%b%b%b%b%b%b%b%b%b", floatRes[22], floatRes[21], floatRes[20], floatRes[19], floatRes[18], floatRes[17], floatRes[16], floatRes[15], floatRes[14], floatRes[13], floatRes[12], floatRes[11], floatRes[10], floatRes[9], floatRes[8], floatRes[7], floatRes[6], floatRes[5], floatRes[4], floatRes[3], floatRes[2], floatRes[1], floatRes[0]);
+      $display("Exp:  01011111111000000000000");
+      $display();
     end
     if(floatRes==32'hc5aff000) begin
       $display("Test 6 succeeded. We got %h!", floatRes);
@@ -101,11 +112,11 @@ module fpuTest ();
     data2=32'h00FFFFFF; //
     FloatALUop=3'd0; #10
     if(floatRes!=32'h017FFFFF) begin //
-      $display("Test 7 failed. We got %f!", floatRes);
+      $display("Test 7 failed. We got %h!", floatRes);
       $display("We got %b!", floatRes);
     end
     if(floatRes==32'h017FFFFF) begin
-      $display("Test 7 succeeded. We got %f!", floatRes);
+      $display("Test 7 succeeded. We got %h!", floatRes);
     end
 
     #100;
@@ -137,8 +148,20 @@ module fpuTest ();
     data2=32'h40cdc28f; // +6.43
     FloatALUop=`ADD; #10
     if(floatRes!=32'h404bf7ce) begin //3.1869998
-      $display("Test 10 failed. We got %h!", floatRes);
-      $display("We got %b!", floatRes);
+      $display();
+      $display("Test 10 failed. We got %h", floatRes);
+      $display("We exp %b", 32'h404bf7ce);
+      $display("We got %b", floatRes);
+      $display("Sign: ");
+      $display("31: %b", floatRes[31]);
+      $display("Exponent: ");
+      $display("30-23: %b%b%b%b%b%b%b%b", floatRes[30], floatRes[29], floatRes[28], floatRes[27], floatRes[26], floatRes[25], floatRes[24], floatRes[23]);
+      $display("Exp:   10000000");
+      $display("Significand: ");
+      $display("22-0: %b%b%b%b%b%b%b%b%b%b%b%b%b%b%b%b%b%b%b%b%b%b%b", floatRes[22], floatRes[21], floatRes[20], floatRes[19], floatRes[18], floatRes[17], floatRes[16], floatRes[15], floatRes[14], floatRes[13], floatRes[12], floatRes[11], floatRes[10], floatRes[9], floatRes[8], floatRes[7], floatRes[6], floatRes[5], floatRes[4], floatRes[3], floatRes[2], floatRes[1], floatRes[0]);
+      $display("Exp:  10010111111011111001110");
+      $display();
+
     end
     if(floatRes==32'h404bf7cf) begin
       $display("Test 10 succeeded. We got %h!", floatRes);
