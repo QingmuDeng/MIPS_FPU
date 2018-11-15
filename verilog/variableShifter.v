@@ -6,10 +6,20 @@ module variableShifter(
 
   always@ (*)begin
     if(shamt[7]==0) begin
-      rshifted = significand>>shamt;
+      if(significand[shamt-1])begin
+        rshifted = (significand>>shamt)+32'b1;
+      end
+      else begin
+        rshifted = (significand>>shamt);
+      end
     end
     else begin
-      rshifted = significand>>(~shamt+8'd1);
+      if(significand[shamt-1])begin
+        rshifted = significand>>(~shamt+8'd1)+32'b1;
+      end
+      else begin
+        rshifted = significand>>(~shamt+8'd1);
+      end
     end
   end
 
