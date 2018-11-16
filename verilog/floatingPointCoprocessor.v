@@ -22,7 +22,7 @@ module coprocessor1 (
   wire xorSign;
   wire [31:0] exponentALUResult, rightShifteddalu, notAluRes, correctFloataluResult;
   wire [31:0] normalizedFloataluResult;
-  wire [31:0] exponentChange;
+  wire [31:0] exponentChange, aluOpA, aluOpB;
 
 
   // case (exponentDiff[7]):
@@ -88,17 +88,9 @@ module coprocessor1 (
     .result(FloataluResult)
   );
 
-  // lshiftOne shiftProcessorOutput(.aluOut(FloataluResult),
-  //                                .lshifted(floatResult));
-
-
-  // not twosComplement(notAluRes, FloataluResult);
-
-  // wire bothNeg;
-  // and andgateNegs(bothNeg, floatA[31], floatB[31]);
 
   mux2to1by32 addSubtract(
-    .address(FloataluResult[31]),//FloatALUop[0]),
+    .address(FloataluResult[31]),
     .input0(FloataluResult),
     .input1(notAluRes + 32'b1),
     .out(correctFloataluResult)
@@ -121,12 +113,6 @@ module coprocessor1 (
     .result(exponentALUResult)
   );
 
-  // mux2to1by32 shiftMe(
-  //     .address(correctFloataluResult[24]&~(|(correctFloataluResult[31:25]))),
-  //     .input0(correctFloataluResult),
-  //     .input1(correctFloataluResult>>>1),
-  //     .out(rightShifteddalu)
-  //   );
   normalizer normal(
     .FloataluResult(correctFloataluResult),
     .normalizedFloataluResult(normalizedFloataluResult),
@@ -136,7 +122,18 @@ module coprocessor1 (
     assign notAluRes = ~FloataluResult;
   always @ ( * ) begin
 
+    if (FloatALUop[0] && exponentDiff[7]==1'b0 && |exponentDiff[6:0]!=1'b0) begin
+      floatRes <= {floatB[31], exponentALUResult[7:0], normalizedFloataluResult[22:0]};
+    end
+    else if (FloatALUop[0] && exponentDiff[7]==1'b0 && |exponentDiff[6:0]==1'b0) begin
+      floatRes <= {~floatB[31], exponentALUResult[7:0], normalizedFloataluResult[22:0]};
+    end
+    else if (FloatALUop[0] && exponentDiff[7] == 1'b1) begin
+      floatRes <= {~floatB[31], exponentALUResult[7:0], normalizedFloataluResult[22:0]};
+    end
+    else begin
       floatRes <= {FloataluResult[31], exponentALUResult[7:0], normalizedFloataluResult[22:0]};
+    end
 
     // floatRes <= {FloataluResult[31], exponentALUResult[7:0], FloataluResult[22:0]};
 

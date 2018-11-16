@@ -10,12 +10,24 @@
 `define XORI 6'he
 `define JUMP 6'h2
 `define JAL 6'h3
+`define FR 6'h11
 
-// Funct Codes
+// Core R-type Funct Codes
 `define JR 6'h8
 `define SUB 6'h22
 `define SLT 6'h2a
 `define ADD 6'h20
+`define MULT 6'h18
+`define MFLO 6'h12
+`define MFHI 6'h10
+
+// Arithmetic Core FMT Codes
+`define SINGLE 5'h10
+`define DOUBLE 5'h11
+
+// Arithmetic Core Funct Codes
+`define ADD_S 6'h0
+`define SUB_S 6'h1
 
 //ALU Op Codes
 `define ADDSIGNAL  3'd0
@@ -27,15 +39,14 @@
 `define NORSIGNAL  3'd6
 `define ORSIGNAL   3'd7
 
-
 module instructionDecoder(
     input [5:0] opcode,
     input [5:0] functcode,
     input zero,
 
-    output reg regWrite, muxA_en, dm_we, muxWD3_en, multiplyEn,
+    output reg regWrite, muxA_en, dm_we, multiplyEn, FloatingPointEn
     output reg [1:0] muxB_en, regWriteAddSelect, muxPC,
-    output reg [2:0] ALUop
+    output reg [2:0] ALUop, muxWD3_en
   );
   wire nzero;
   not not0(nzero, zero);
@@ -53,32 +64,59 @@ module instructionDecoder(
         dm_we <= 1'b0;
         muxA_en <= 1'b0;
         muxB_en <= 2'd1;
-        muxWD3_en <= 1'b1;
         regWriteAddSelect <= 2'd2;
+        FloatingPointEn <= 1'b0;
 
         case(functcode)
           `JR: begin
             regWrite <= 1'b0;
             muxPC <= 2'd2;
             ALUop <= 3'd0;
+            multiplyEn <= 1'b0;
+            muxWD3_en <= 3'b1;
           end
-
           `ADD: begin
             regWrite <= 1'b1;
             muxPC <= 2'd0;
             ALUop <= `ADDSIGNAL;
+            multiplyEn <= 1'b0;
+            muxWD3_en <= 3'b1;
           end
           `SUB: begin
             regWrite <= 1'b1;
             muxPC <= 2'd0;
             ALUop <= `SUBSIGNAL;
+            multiplyEn <= 1'b0;
+            muxWD3_en <= 3'b1;
           end
           `SLT: begin
             regWrite <= 1'b1;
             muxPC <= 2'd0;
             ALUop <= `SLTSIGNAL;
+            multiplyEn <= 1'b0;
+            muxWD3_en <= 3'b1;
           end
-
+          `MULT: begin
+            regWrite <= 1'b0;
+            muxPC <= 2'd0;
+            ALUop <= `ADD;
+            multiplyEn <= 1'b1;
+            muxWD3_en <= 3'b1;
+          end
+          `MFHI: begin
+            regWrite <= 1'b0;
+            muxPC <= 2'd0;
+            ALUop <= `ADD;
+            multiplyEn <= 1'b0;
+            muxWD3_en <= 3'd2;
+          end
+          `MFLO: begin
+            regWrite <= 1'b0;
+            muxPC <= 2'd0;
+            ALUop <= `ADD;
+            multiplyEn <= 1'b0;
+            muxWD3_en <= 3'd3;
+          end
         endcase
       end
 
@@ -86,32 +124,35 @@ module instructionDecoder(
         regWrite <= 1'b1;
         muxA_en <= 1'b0;
         dm_we <= 1'b0;
-        muxWD3_en <= 1'b0;
+        muxWD3_en <= 3'd0;
         muxB_en <= 2'd0;
         regWriteAddSelect <= 2'd0;
         muxPC <= 2'd0;
         ALUop <= `ADDSIGNAL;
+        FloatingPointEn <= 1'b0;
       end
 
       `SW: begin
         regWrite <= 1'b0;
         muxA_en <= 1'b0;
         dm_we <= 1'b1;
-        muxWD3_en <= 1'b0;
+        muxWD3_en <= 3'd0;
         muxB_en <= 2'd0;
         regWriteAddSelect <= 2'b0;
         muxPC <= 2'd0;
         ALUop <= `ADDSIGNAL;
+        FloatingPointEn <= 1'b0;
       end
 
       `BEQ: begin
         regWrite <= 1'b0;
         muxA_en <= 1'b0;
         dm_we <= 1'b0;
-        muxWD3_en = 1'b0;
+        muxWD3_en <= 3'd0;
         muxB_en <= 2'd1;
-        regWriteAddSelect = 2'b0;
+        regWriteAddSelect <= 2'b0;
         ALUop <= `SUBSIGNAL;
+        FloatingPointEn <= 1'b0;
         if(zero) begin
           muxPC <= 2'd3;
         end else begin
@@ -123,10 +164,11 @@ module instructionDecoder(
         regWrite <= 1'b0;
         muxA_en <= 1'b0;
         dm_we <= 1'b0;
-        muxWD3_en = 1'b0;
+        muxWD3_en = 3'd0;
         muxB_en <= 2'd1;
-        regWriteAddSelect = 2'b0;
+        regWriteAddSelect <= 2'b0;
         ALUop <= `SUBSIGNAL;
+        FloatingPointEn <= 1'b0;
         if(nzero) begin
           muxPC <= 2'd3;
         end else begin
@@ -138,45 +180,68 @@ module instructionDecoder(
         regWrite <= 1'b1;
         muxA_en <= 1'b0; // Changed this to 1 from 0
         dm_we <= 1'b0;
-        muxWD3_en <= 1'b1;
-        muxB_en = 2'd0;
+        muxWD3_en <= 3'd1;
+        muxB_en <= 2'd0;
         regWriteAddSelect <= 2'b0;
         muxPC <= 2'd0;
         ALUop <= `ADDSIGNAL;
+        FloatingPointEn <= 1'b0;
       end
 
       `XORI: begin
         regWrite <= 1'b1;
         muxA_en <= 1'b0;
         dm_we <= 1'b0;
-        muxWD3_en <= 1'b1;
+        muxWD3_en <= 3'd1;
         muxB_en <= 2'd0;
         regWriteAddSelect <= 2'b0;
         muxPC <= 2'b0;
         ALUop <= `XORSIGNAL;
+        FloatingPointEn <= 1'b0;
       end
 
       `JUMP: begin
         regWrite <= 1'b0;
-        muxA_en = 1'b0;
+        muxA_en <= 1'b0;
         dm_we <= 1'b0;
-        muxWD3_en = 1'b0;
-        muxB_en = 1'b0;
-        regWriteAddSelect = 1'b0;
+        muxWD3_en <= 3'd0;
+        muxB_en <= 1'b0;
+        regWriteAddSelect <= 1'b0;
         muxPC <= 2'b1;
         ALUop <= `ADDSIGNAL;
+        FloatingPointEn <= 1'b0;
       end
 
       `JAL: begin
         regWrite <= 1'b1;
         muxA_en <= 1'b1;
         dm_we <= 1'b0;
-        muxWD3_en <= 1'b1;
+        muxWD3_en <= 3'd1;
         muxB_en <= 2'd2;
         regWriteAddSelect <= 2'b1;
         muxPC <= 2'b1;
         ALUop <= `ADDSIGNAL;
+        FloatingPointEn <= 1'b0;
       end
+
+      `FR: begin
+        regWrite <= 1'b1;
+        muxA_en <= 1'b0;
+        dm_we <= 1'b0;
+        muxWD3_en <= 3'd4;
+        muxB_en <= 2'd0;
+        regWriteAddSelect <= 2'd3;
+        muxPC <= 2'b1;
+        FloatingPointEn <= 1'b1;
+        case(functcode)
+          `ADD_S: begin
+            ALUop <= `ADDSIGNAL;
+          end
+          `SUB_S: begin
+            ALUop <= `SUBSIGNAL;
+          end
+        endcase
+       end
 
     endcase
   end

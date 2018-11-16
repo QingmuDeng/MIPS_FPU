@@ -7,6 +7,7 @@
 `include "regfile.v"
 `include "dff.v"
 `include "multiplier.v"
+`include "floatingPointCoprocessor.v"
 
 module cpu(
   input clk
@@ -20,14 +21,14 @@ wire [31:0] signExtended;
 wire [31:0] branchALUin;
 wire [27:0] jumpShifted;
 wire [31:0] aluResult;
-wire zeroFlag;
 wire [31:0] readOut1, readOut2;
 wire [1:0] pcMuxSelect, regWriteSelectControl, muxB_en;
-wire dm_we, regWr_en, muxAselect, muxWd3_en, multiplyEn;
+wire dm_we, regWr_en, muxAselect, muxWd3_en, multiplyEn, zeroFlag, FloatingPointEn;
 wire [31:0] pcPlusFour;
 wire [31:0] branchAddress;
 wire [2:0] ALUop;
-wire [31:0] Hi, Lo;
+wire [31:0] Hi, Lo, floatRes;
+wire [4:0] RsFsSeclect;
 
 memory cpuMemory (
   .clk(clk),
@@ -64,6 +65,13 @@ mux4to1by5 muxRegWriteSelect(
   .out(regWrAddress)
   );
 
+mux2to1by32 rsfs(
+  .address(FloatingPointEn),
+  .input0(instruction[25:21]),
+  .input1(instruction[15:11]),
+  .out(RsFsSeclect)
+  );
+
 mux4to1by32 muxB(
     .address(muxB_en),
     .input0(signExtended),
@@ -79,10 +87,13 @@ mux2to1by32 muxA(
   .out(opA)
   );
 
-mux2to1by32 muxWD3(
+mux8to1by32 muxWD3(
   .address(muxWd3_en),
   .input0(dataOut),
   .input1(aluResult),
+  .input2(Hi),
+  .input3(Lo),
+  .input4(floatRes),
   .out(writeData)
   );
 
@@ -115,7 +126,7 @@ regfile registerFile(
   .Clk(clk),
   .RegWrite(regWr_en),
   .WriteRegister(regWrAddress),
-  .ReadRegister1(instruction[25:21]),
+  .ReadRegister1(RsFsSeclect),
   .ReadRegister2(instruction[20:16]),
   .WriteData(writeData),
   .ReadData1(readOut1),
@@ -131,6 +142,7 @@ instructionDecoder opDecoder(
   .dm_we(dm_we),
   .muxWD3_en(muxWd3_en),
   .multiplyEn(multiplyEn),
+  .FloatingPointEn(FloatingPointEn),
   .muxB_en(muxB_en),
   .regWriteAddSelect(regWriteSelectControl),
   .muxPC(pcMuxSelect),
@@ -163,9 +175,9 @@ multiply X(.enable(multiplyEn),
            .Hi(Hi),
            .Lo(Lo));
 
-  // assign pcIn = 32'b0;
+coprocessor1 fpu(.data1(readOut1),
+                 .data2(readOut2),
+                 .FloatALUop(ALUop),
+                 .floatRes(floatRes));
 
-// initial begin
-//   pcOut = 32'b0;
-// end
 endmodule
