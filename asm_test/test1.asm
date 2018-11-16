@@ -20,25 +20,25 @@ addi	$t3, $t0, 0		# address of my_array[i] (starts from base address for i=0)
 
 
 MAIN:
-l.s $f0, 0($t3)
-l.s $f1, 4($t3)
+lwc1 $f0, 0($t3)
+lwc1 $f1, 4($t3)
 add.s $f0, $f0, $f1
-s.s $f0, 8($t3)
+swc1 $f0, 8($t3)
 addi $t3, $t3, 12
-l.s $f0, 0($t3)
-l.s $f1, 4($t3)
+lwc1 $f0, 0($t3)
+lwc1 $f1, 4($t3)
 add.s $f0, $f0, $f1
-s.s $f0, 8($t3)
+swc1 $f0, 8($t3)
 addi $t3, $t3, 12
-l.s $f0, 0($t3)
-l.s $f1, 4($t3)
+lwc1 $f0, 0($t3)
+lwc1 $f1, 4($t3)
 sub.s $f0, $f0, $f1
-s.s $f0, 8($t3)
+swc1 $f0, 8($t3)
 addi $t3, $t3, 12
-l.s $f0, 0($t3)
-l.s $f1, 4($t3)
+lwc1 $f0, 0($t3)
+lwc1 $f1, 4($t3)
 sub.s $f0, $f0, $f1
-s.s $f0, 8($t3)
+swc1 $f0, 8($t3)
 addi $t3, $t3, 12
 j LOOPEND
 
