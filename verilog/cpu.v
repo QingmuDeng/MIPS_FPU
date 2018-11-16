@@ -30,9 +30,9 @@ wire [2:0] ALUop;
 wire [31:0] Hi, Lo, floatRes;
 // wire [4:0] RsFsSeclect;
 
-wire [31:0] float_readOut1, float_readOut2, float_writeData;
+wire [31:0] float_readOut1, float_readOut2, float_writeData, dataMemIn;
 wire [4:0] float_regWrAddress;
-wire float_regWrite, floatRegWRSelect, floatWriteAddrSelect;
+wire float_regWrite, floatRegWRSelect, floatWriteAddrSelect, dmDataSelect;
 wire [4:0] fs, ftrt, fd;
 assign fs = instruction[15:11];
 assign ftrt = instruction[20:16];
@@ -63,6 +63,13 @@ fpuregfile floatRegFile(
   .ReadData2(float_readOut2)
   );
 
+mux2to1by32 dataMemoryMux(
+  .address(dmDataSelect),
+  .input0(readOut2),
+  .input1(float_readOut2),
+  .out(dataMemIn)
+  );
+
 coprocessor1 fpu(.data1(float_readOut1),
                  .data2(float_readOut2),
                  .FloatALUop(ALUop),
@@ -75,7 +82,7 @@ memory cpuMemory (
   .InstructionAddress(pcOut), // initially we set these to [15:0], address are not full 32 bits???
   .dataMemoryAddress(aluResult), //// address are not full 32 bits???
   .dataMemorywriteEnable(dm_we),
-  .dataMemorydataIn(readOut2)
+  .dataMemorydataIn(dataMemIn)
   );
 
 
@@ -184,6 +191,7 @@ instructionDecoder opDecoder(
   .floatWriteAddrSelect(floatWriteAddrSelect),
   .floatRegWrite(float_regWrite),
   .floatRWSelect(floatRegWRSelect),
+  .dmDataSelect(dmDataSelect),
   .muxPC(pcMuxSelect),
   .ALUop(ALUop)
   );
