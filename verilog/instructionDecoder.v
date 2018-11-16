@@ -44,7 +44,7 @@ module instructionDecoder(
     input [5:0] functcode,
     input zero,
 
-    output reg regWrite, muxA_en, dm_we, multiplyEn, FloatingPointEn
+    output reg regWrite, muxA_en, dm_we, multiplyEn, FloatingPointEn,
     output reg [1:0] muxB_en, regWriteAddSelect, muxPC,
     output reg [2:0] ALUop, muxWD3_en
   );
