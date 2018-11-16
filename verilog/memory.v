@@ -57,11 +57,11 @@ module memory
 
    always @(posedge clk) begin
       if(dataMemorywriteEnable)
-        memory[compactDataMemoryAddress] <= dataMemorydataIn;
+        memory[compactDataMemoryAddress>>2] <= dataMemorydataIn;
 
    end
 
-   assign dataMemorydataOut = memory[compactDataMemoryAddress];
+   assign dataMemorydataOut = memory[compactDataMemoryAddress>>2];
    assign instructionOut = memory[compactInstructionAddress>>2];
 
 endmodule
