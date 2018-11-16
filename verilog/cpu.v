@@ -61,7 +61,7 @@ mux4to1by5 muxRegWriteSelect(
   .input0(instruction[20:16]),
   .input1(5'h1F),
   .input2(instruction[15:11]),
-  .input3(),
+  .input3(instruction[10:6]),
   .out(regWrAddress)
   );
 
