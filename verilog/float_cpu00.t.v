@@ -32,6 +32,9 @@ initial begin
     // if (dut.registerFile.mainReg[5'd8].register.q == 32'h2000 && dut.registerFile.mainReg[5'd9].register.q == 32'h8 && dut.registerFile.mainReg[5'd10].register.q == 32'h8 && dut.registerFile.mainReg[5'd11].register.q == 32'h2020 && dut.registerFile.mainReg[5'd12].register.q == 32'ha && dut.registerFile.mainReg[5'd13].register.q == 32'h1c && dut.registerFile.mainReg[5'd14].register.q == 32'h0 && dut.registerFile.mainReg[5'd15].register.q == 32'h4) begin
       $display("Test 1 Passed");
     end
+    else begin
+      $display("Test 1 Failed");
+    end
     #500
 
 

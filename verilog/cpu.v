@@ -22,13 +22,51 @@ wire [31:0] branchALUin;
 wire [27:0] jumpShifted;
 wire [31:0] aluResult;
 wire [31:0] readOut1, readOut2;
-wire [1:0] pcMuxSelect, regWriteSelectControl, muxB_en;
-wire dm_we, regWr_en, muxAselect, muxWd3_en, multiplyEn, zeroFlag, FloatingPointEn;
+wire [1:0] pcMuxSelect, regWriteSelectControl, muxB_en, muxWd3_en;
+wire dm_we, regWr_en, muxAselect, multiplyEn, zeroFlag;
 wire [31:0] pcPlusFour;
 wire [31:0] branchAddress;
 wire [2:0] ALUop;
 wire [31:0] Hi, Lo, floatRes;
-wire [4:0] RsFsSeclect;
+// wire [4:0] RsFsSeclect;
+
+wire [31:0] float_readOut1, float_readOut2, float_writeData;
+wire [4:0] float_regWrAddress;
+wire float_regWrite, floatRegWRSelect, floatWriteAddrSelect;
+wire [4:0] fs, ftrt, fd;
+assign fs = instruction[15:11];
+assign ftrt = instruction[20:16];
+assign fd = instruction[10:6];
+
+mux2to1by5 floatAddrMux(
+  .address(floatWriteAddrSelect),
+  .input0(fd),
+  .input1(ftrt),
+  .out(float_regWrAddress)
+  );
+
+mux2to1by32 floatDataMux(
+  .address(floatRegWRSelect),
+  .input0(dataOut),
+  .input1(floatRes),
+  .out(float_writeData)
+  );
+
+fpuregfile floatRegFile(
+  .Clk(clk),
+  .RegWrite(float_regWrite),
+  .WriteRegister(float_regWrAddress),
+  .ReadRegister1(fs),
+  .ReadRegister2(ftrt),
+  .WriteData(float_writeData),
+  .ReadData1(float_readOut1),
+  .ReadData2(float_readOut2)
+  );
+
+coprocessor1 fpu(.data1(float_readOut1),
+                 .data2(float_readOut2),
+                 .FloatALUop(ALUop),
+                 .floatRes(floatRes));
 
 memory cpuMemory (
   .clk(clk),
@@ -65,12 +103,12 @@ mux4to1by5 muxRegWriteSelect(
   .out(regWrAddress)
   );
 
-mux2to1by32 rsfs(
-  .address(FloatingPointEn),
-  .input0(instruction[25:21]),
-  .input1(instruction[15:11]),
-  .out(RsFsSeclect)
-  );
+// mux2to1by32 rsfs(
+//   .address(FloatingPointEn),
+//   .input0(instruction[25:21]),
+//   .input1(instruction[15:11]),
+//   .out(RsFsSeclect)
+//   );
 
 mux4to1by32 muxB(
     .address(muxB_en),
@@ -87,13 +125,12 @@ mux2to1by32 muxA(
   .out(opA)
   );
 
-mux8to1by32 muxWD3(
+mux4to1by32 muxWD3(
   .address(muxWd3_en),
   .input0(dataOut),
   .input1(aluResult),
   .input2(Hi),
   .input3(Lo),
-  .input4(floatRes),
   .out(writeData)
   );
 
@@ -126,7 +163,7 @@ regfile registerFile(
   .Clk(clk),
   .RegWrite(regWr_en),
   .WriteRegister(regWrAddress),
-  .ReadRegister1(RsFsSeclect),
+  .ReadRegister1(instruction[25:21]),
   .ReadRegister2(instruction[20:16]),
   .WriteData(writeData),
   .ReadData1(readOut1),
@@ -142,9 +179,11 @@ instructionDecoder opDecoder(
   .dm_we(dm_we),
   .muxWD3_en(muxWd3_en),
   .multiplyEn(multiplyEn),
-  .FloatingPointEn(FloatingPointEn),
   .muxB_en(muxB_en),
   .regWriteAddSelect(regWriteSelectControl),
+  .floatWriteAddrSelect(floatWriteAddrSelect),
+  .floatRegWrite(float_regWrite),
+  .floatRWSelect(floatRegWRSelect),
   .muxPC(pcMuxSelect),
   .ALUop(ALUop)
   );
@@ -174,10 +213,5 @@ multiply X(.enable(multiplyEn),
            .B(opB),
            .Hi(Hi),
            .Lo(Lo));
-
-coprocessor1 fpu(.data1(readOut1),
-                 .data2(readOut2),
-                 .FloatALUop(ALUop),
-                 .floatRes(floatRes));
 
 endmodule

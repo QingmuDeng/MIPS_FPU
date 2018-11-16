@@ -1,3 +1,6 @@
+`ifndef _alu_
+`define _alu_
+
 `define NOT not //#10
 `define NOT3 not //#30
 `define NAND nand //#20
@@ -173,3 +176,5 @@ module multiplexer
 
   `OR5 orgateOut(out, addWire, xorWire, sltWire, nandWire, norWire);
 endmodule
+
+`endif
