@@ -113,14 +113,14 @@ module instructionDecoder(
             muxWD3_en <= 2'b1;
           end
           `MFHI: begin
-            regWrite <= 1'b0;
+            regWrite <= 1'b1;
             muxPC <= 2'd0;
             ALUop <= `ADD;
             multiplyEn <= 1'b0;
             muxWD3_en <= 2'd2;
           end
           `MFLO: begin
-            regWrite <= 1'b0;
+            regWrite <= 1'b1;
             muxPC <= 2'd0;
             ALUop <= `ADD;
             multiplyEn <= 1'b0;
@@ -142,6 +142,7 @@ module instructionDecoder(
         floatRegWrite = 1'b0;
         floatRWSelect = 1'b0;
         dmDataSelect = 1'b0;
+        multiplyEn <= 1'b0;
       end
 
       `SW: begin
@@ -157,6 +158,7 @@ module instructionDecoder(
         floatRegWrite = 1'b0;
         floatRWSelect = 1'b0;
         dmDataSelect = 1'b0;
+        multiplyEn <= 1'b0;
       end
 
       `BEQ: begin
@@ -171,6 +173,7 @@ module instructionDecoder(
         floatRegWrite = 1'b0;
         floatRWSelect = 1'b0;
         dmDataSelect = 1'b0;
+        multiplyEn <= 1'b0;
         if(zero) begin
           muxPC <= 2'd3;
         end else begin
@@ -190,6 +193,7 @@ module instructionDecoder(
         floatRegWrite = 1'b0;
         floatRWSelect = 1'b0;
         dmDataSelect = 1'b0;
+        multiplyEn <= 1'b0;
         if(nzero) begin
           muxPC <= 2'd3;
         end else begin
@@ -210,6 +214,7 @@ module instructionDecoder(
         floatRegWrite = 1'b0;
         floatRWSelect = 1'b0;
         dmDataSelect = 1'b0;
+        multiplyEn <= 1'b0;
       end
 
       `XORI: begin
@@ -225,6 +230,7 @@ module instructionDecoder(
         floatRegWrite = 1'b0;
         floatRWSelect = 1'b0;
         dmDataSelect = 1'b0;
+        multiplyEn <= 1'b0;
       end
 
       `JUMP: begin
@@ -240,6 +246,7 @@ module instructionDecoder(
         floatRegWrite = 1'b0;
         floatRWSelect = 1'b0;
         dmDataSelect = 1'b0;
+        multiplyEn <= 1'b0;
       end
 
       `JAL: begin
@@ -255,6 +262,7 @@ module instructionDecoder(
         floatRegWrite = 1'b0;
         floatRWSelect = 1'b0;
         dmDataSelect = 1'b0;
+        multiplyEn <= 1'b0;
       end
 
       `FR: begin
@@ -269,6 +277,7 @@ module instructionDecoder(
         floatRegWrite = 1'b1;
         floatRWSelect = 1'b1;
         dmDataSelect = 1'b0;
+        multiplyEn <= 1'b0;
         case(functcode)
           `ADD_S: begin
             ALUop <= `ADDSIGNAL;
@@ -292,6 +301,7 @@ module instructionDecoder(
          floatRegWrite = 1'b0;
          floatRWSelect = 1'b0;
          dmDataSelect = 1'b1;
+         multiplyEn <= 1'b0;
        end
 
       `LWC1: begin
@@ -307,6 +317,7 @@ module instructionDecoder(
          floatRegWrite = 1'b1;
          floatRWSelect = 1'b0;
          dmDataSelect = 1'b0;
+         multiplyEn <= 1'b0;
       end
 
     endcase
