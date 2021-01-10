@@ -1,0 +1,145 @@
+<!DOCTYPE HTML>
+<!--
+	Verti by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>MIPS FPU</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="is-preload left-sidebar">
+		<div id="page-wrapper">
+
+			<!-- Header -->
+				<div id="header-wrapper">
+					<header id="header" class="container">
+
+						<!-- Logo -->
+							<div id="logo">
+								<h1><a href="port.html">FPU</a></h1>
+								<span>Computer Architecture Lab</span>
+							</div>
+
+						<!-- Nav -->
+							<nav id="nav">
+								<ul>
+									<!-- <li class="current"><a href="index.html">Welcome</a></li>
+									<li><a href="index.html">Homepage</a></li> -->
+								</ul>
+							</nav>
+
+					</header>
+				</div>
+
+			<!-- Main -->
+				<div id="main-wrapper">
+					<div class="container">
+						<div class="row gtr-200">
+							<div class="col-4 col-12-medium">
+								<div id="sidebar">
+
+									<!-- Sidebar -->
+										<section>
+											<h3>Project Summary</h3>
+											<p>We improved upon our single cycle, 32-bit CPU by adding fixed-point
+											multiplication functionality and MIPS coprocessor 1, the standard IEEE-754 compliant
+											floating-point unit (FPU). Using assembly code, we verified the
+											functionality of these additional units.</p>
+											<!-- <footer>
+												<a href="#" class="button icon solid fa-info-circle">Find out more</a>
+											</footer> -->
+										</section>
+										<section>
+											<h3>Contributors</h3>
+											<ul class="style2">
+												<li><a href="https://djconnolly27.github.io/">Daniel Connolly</a> (CPU + FPU)</li>
+												<li><a href="https://qingmudeng.github.io/">Qingmu Deng</a> (CPU + FPU)</li>
+												<li><a href="http://www.willfairman.com/">William Fairman</a> (CPU)</li>
+											</ul>
+
+										</section>
+
+										<section>
+											<h3>Related Links</h3>
+											<ul class="style2">
+												<li><a href="https://github.com/QingmuDeng/MIPS_FPU">FPU Project Github</a></li>
+												<li><a href="../CompArch_Lab_4.pdf">FPU Project Report</a></li>
+												<li><a href="https://github.com/QingmuDeng/Lab3">CPU Project Github</a></li>
+												<li><a href="https://raw.githubusercontent.com/QingmuDeng/Lab3/master/Report.pdf">CPU Project Report</a></li>
+											</ul>
+										</section>
+
+								</div>
+							</div>
+							<div class="col-8 col-12-medium imp-medium">
+								<div id="content">
+
+									<!-- Content -->
+										<article>
+											<p>You can view our CPU block diagram by clicking below.<a href="images/Block_Diagram.jpg" class="image featured" target="_blank"><img src="images/Block_Diagram.jpg" alt="" /></a></p>
+											<h2>Single Cycle CPU</h2>
+											<p>We implemented a total of 12 MISP-compliant instructions that allows us to perform basic computations with our CPU. Our
+											implementation has been demonstrated to function properly without bugs. Its capabilities were demonstrated with
+											two recursive calculations: the Fibonacci numbers and the minimal step numbers in the Tower of Haoni. For example, the snippet 
+											below of the waveforms output by
+											our CPU when we tested our Fibonacci function are shown above. These waveforms clearly display the moment that the <i>q</i>
+											output value of register two in our register file transitioned to its final correct and stable state of 0x37, which is 
+											fifty-five in the decimal base-ten system. Given that we had implemented our assembly code to look for the tenth number 
+											in the Fibonacci sequence, and fifty-five is the tenth number in that sequence, we know our CPU has successfully ran a 
+											variety of instructions, including recursive calls.
+											</p>
+											<a href="images/fib_10_ans.png" class="image featured" target="_blank"><img src="images/fib_10_ans.png" alt="" /></a>
+											<h2>Floating Point Unit</h2>
+											<p>In the FPU part of our project, we extended the original 12-instruction CPU with 7 additional instructions for multiplication
+											and floating point addition and subtraction. The 19 instructions and their associated control logic in shown in the figure below.
+											</p>
+											<a href="images/control_table.jpg" class="image featured" target="_blank"><img src="images/control_table.jpg" alt="" /></a>
+											<p>To verify the multiplication unit, we computed the factorial of integers. As you can see, the results in <i>Lo[31:0]</i>, 
+											expressed in hexdecimal, proceeded correctly for 2!, 3!, 4! and 5!.
+											</p>
+											<a href="images/factorial.jpg" class="image featured" target="_blank"><img src="images/factorial.jpg" alt="" /></a>
+											<p>To verify the floating unit, we performed computations shown below. For instance, at 80 sec, 0x40133333(2.29999995232, <i>data1</i>) 
+											plus 0xC5AF3800(-5607.0, <i>data2</i>) equals 0xC5AF259A(-5604.70019531, <i>floatRes</i>).
+											</p>
+											<a href="images/WorkingWithManualZeros.png" class="image featured" target="_blank"><img src="images/WorkingWithManualZeros.png" alt="" /></a>
+											<p>You can find out more about our project in the related links on the left.</p>
+										</article>
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			<!-- Footer -->
+				<!-- <div id="footer-wrapper"> -->
+					<footer id="footer" class="container">
+						<div class="row">
+							<div class="col-12">
+								<div id="copyright">
+									<ul class="menu">
+										<li>&copy; Design: <a href="http://html5up.net">HTML5 UP</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</footer>
+				<!-- </div> -->
+
+			</div>
+
+		<!-- Scripts -->
+
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.dropotron.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
